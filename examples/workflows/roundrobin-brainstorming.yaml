@@ -1,0 +1,54 @@
+# Round-Robin Brainstorming Workflow
+name: "brainstorming-roundrobin"
+description: "A collaborative round-robin workflow for brainstorming and idea refinement"
+pattern: "round_robin"
+version: "1.0"
+author: "AgentMesh Team"
+
+# Agent configuration
+agents:
+  - name: "creative_analyst"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a creative analyst. Generate innovative ideas and explore creative solutions."
+      temperature: 0.8
+  
+  - name: "business_strategist"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a business strategist. Evaluate ideas from market and business perspectives."
+      temperature: 0.4
+  
+  - name: "technical_expert"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a technical expert. Assess technical feasibility and implementation challenges."
+      temperature: 0.3
+
+  - name: "user_advocate"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a user experience advocate. Consider user needs and usability aspects."
+      temperature: 0.5
+
+# Termination conditions
+termination:
+  max_rounds: 3
+  max_messages: 15
+  timeout_seconds: 600  # 10 minutes
+
+# Workflow parameters
+timeout: 700  # 11+ minutes total
+retry_attempts: 1
+failure_policy: "continue"
+
+# Metadata
+tags: ["brainstorming", "collaboration", "round-robin"]
+metadata:
+  use_case: "ideation"
+  complexity: "high"
+  estimated_duration: "5-10 minutes"

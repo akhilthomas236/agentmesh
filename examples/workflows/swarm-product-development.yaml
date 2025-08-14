@@ -1,0 +1,96 @@
+name: "Product Development Swarm"
+pattern: "swarm"
+
+agents:
+  - name: "product_manager"
+    type: "assistant"
+    system_message: >
+      You are a Product Manager responsible for defining requirements, managing roadmap, 
+      and ensuring alignment with business objectives. You excel at stakeholder management 
+      and translating business needs into technical requirements.
+
+  - name: "tech_lead"
+    type: "assistant"
+    system_message: >
+      You are a Technical Lead with expertise in software architecture, system design, 
+      and code review. You guide technical decisions and ensure engineering best practices.
+
+  - name: "developer"
+    type: "assistant"
+    system_message: >
+      You are a Software Developer skilled in implementation, coding, and debugging. 
+      You translate designs into working code and collaborate with the team on technical solutions.
+
+  - name: "qa_engineer"
+    type: "assistant"
+    system_message: >
+      You are a QA Engineer focused on testing, quality assurance, and validation. 
+      You ensure that deliverables meet quality standards and identify potential issues.
+
+  - name: "ui_designer"
+    type: "assistant"
+    system_message: >
+      You are a UI/UX Designer specializing in user interface design, user experience, 
+      and creating intuitive, accessible designs that meet user needs.
+
+swarm:
+  participants:
+    - agent: "product_manager"
+      specializations: ["requirements", "roadmap", "stakeholder_management", "business_analysis"]
+      handoff_targets: ["tech_lead", "ui_designer", "qa_engineer"]
+      participation_weight: 1.5
+      max_consecutive_turns: 5
+      priority_keywords: ["requirements", "roadmap", "business", "stakeholder", "priority"]
+    
+    - agent: "tech_lead"
+      specializations: ["architecture", "technical_design", "code_review", "best_practices"]
+      handoff_targets: ["developer", "qa_engineer", "product_manager"]
+      participation_weight: 1.3
+      max_consecutive_turns: 4
+      priority_keywords: ["architecture", "design", "technical", "review", "standards"]
+    
+    - agent: "developer"
+      specializations: ["implementation", "coding", "debugging", "integration"]
+      handoff_targets: ["tech_lead", "qa_engineer", "ui_designer"]
+      participation_weight: 1.0
+      max_consecutive_turns: 6
+      priority_keywords: ["code", "implement", "develop", "bug", "feature"]
+    
+    - agent: "qa_engineer"
+      specializations: ["testing", "quality_assurance", "validation", "automation"]
+      handoff_targets: ["developer", "tech_lead", "product_manager"]
+      participation_weight: 1.1
+      max_consecutive_turns: 3
+      priority_keywords: ["test", "quality", "bug", "validation", "automation"]
+    
+    - agent: "ui_designer"
+      specializations: ["design", "user_experience", "prototyping", "accessibility"]
+      handoff_targets: ["product_manager", "developer", "qa_engineer"]
+      participation_weight: 0.9
+      max_consecutive_turns: 4
+      priority_keywords: ["design", "ui", "ux", "user", "interface", "prototype"]
+
+  termination:
+    type: "consensus"
+    consensus_threshold: 0.8
+    required_agents: ["product_manager", "tech_lead"]
+    consensus_keywords: ["approved", "ready", "complete", "deliverable"]
+    max_messages: 50
+    timeout: 3600  # 1 hour
+    fallback_timeout: 5400  # 1.5 hours
+
+  handoff_config:
+    autonomous_threshold: 0.6
+    keyword_boost: 0.3
+    specialization_boost: 0.4
+    recent_activity_penalty: 0.2
+    load_balancing: true
+    broadcast_threshold: 0.2
+
+execution:
+  max_rounds: 25
+  timeout: 3600
+  parameters:
+    collaboration_style: "autonomous"
+    quality_gate: "consensus"
+    documentation_required: true

@@ -1,0 +1,117 @@
+name: "Creative Writing Swarm"
+description: "Autonomous swarm for collaborative creative writing with specialization-based handoffs"
+pattern: "swarm"
+
+agents:
+  - name: "idea_generator"
+    type: "chat"
+    config:
+      system_message: "You are a Creative Idea Generator who comes up with original concepts and storylines."
+  - name: "character_developer"
+    type: "chat"
+    config:
+      system_message: "You are a Character Developer who creates compelling characters and their backstories."
+  - name: "plot_architect"
+    type: "chat"
+    config:
+      system_message: "You are a Plot Architect who structures narratives and develops story arcs."
+  - name: "dialogue_writer"
+    type: "chat"
+    config:
+      system_message: "You are a Dialogue Writer who creates authentic conversations and voice."
+  - name: "style_editor"
+    type: "chat"
+    config:
+      system_message: "You are a Style Editor who refines prose and ensures consistent voice."
+  - name: "continuity_checker"
+    type: "chat"
+    config:
+      system_message: "You are a Continuity Checker who ensures logical consistency and flow."
+
+termination:
+  max_rounds: 20
+  timeout_seconds: 2400
+
+swarm:
+  participants:
+    - agent_id: "idea_generator"
+      name: "Idea Generator"
+      specializations: ["concept_creation", "brainstorming", "innovation"]
+      handoff_targets: ["character_developer", "plot_architect"]
+      weight: 1.8
+      max_consecutive_turns: 2
+      cooldown_seconds: 45
+    
+    - agent_id: "character_developer"
+      name: "Character Developer"
+      specializations: ["character_creation", "psychology", "backstory"]
+      handoff_targets: ["plot_architect", "dialogue_writer", "style_editor"]
+      weight: 1.6
+      max_consecutive_turns: 3
+      cooldown_seconds: 30
+    
+    - agent_id: "plot_architect"
+      name: "Plot Architect"
+      specializations: ["story_structure", "pacing", "narrative_arcs"]
+      handoff_targets: ["dialogue_writer", "style_editor", "continuity_checker"]
+      weight: 2.0
+      max_consecutive_turns: 4
+      cooldown_seconds: 20
+    
+    - agent_id: "dialogue_writer"
+      name: "Dialogue Writer"
+      specializations: ["conversation", "voice", "character_expression"]
+      handoff_targets: ["character_developer", "style_editor", "continuity_checker"]
+      weight: 1.4
+      max_consecutive_turns: 3
+      cooldown_seconds: 35
+    
+    - agent_id: "style_editor"
+      name: "Style Editor"
+      specializations: ["prose_refinement", "voice_consistency", "flow"]
+      handoff_targets: ["dialogue_writer", "continuity_checker"]
+      weight: 1.2
+      max_consecutive_turns: 2
+      cooldown_seconds: 50
+    
+    - agent_id: "continuity_checker"
+      name: "Continuity Checker"
+      specializations: ["logical_consistency", "fact_checking", "quality_assurance"]
+      handoff_targets: ["plot_architect", "style_editor"]
+      weight: 1.0
+      max_consecutive_turns: 2
+      cooldown_seconds: 60
+
+  termination:
+    max_messages: 30
+    max_handoffs: 25
+    timeout_seconds: 2000
+    convergence_threshold: 0.85
+    min_participation: 0.7
+
+  handoff_strategy: "autonomous"
+  collaboration_mode: "cooperative"
+  initial_agent: "idea_generator"
+
+parameters:
+  writing_project:
+    genre: "science_fiction"
+    target_length: "short_story"
+    style: "modern"
+    audience: "young_adult"
+  
+  creative_constraints:
+    themes: ["technology", "human_connection", "future_society"]
+    tone: "optimistic_but_realistic"
+    perspective: "third_person_limited"
+  
+  quality_standards:
+    creativity_score: 0.8
+    coherence_score: 0.9
+    engagement_score: 0.85
+    technical_quality: 0.8
+  
+  swarm_dynamics:
+    creative_exploration: 0.4
+    structure_focus: 0.6
+    revision_cycles: 3

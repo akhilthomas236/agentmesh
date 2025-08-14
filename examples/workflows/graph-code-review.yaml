@@ -1,0 +1,153 @@
+# Graph-based Code Review Workflow
+name: "graph-code-review"
+description: "A complex graph-based workflow for comprehensive code review with parallel analysis and conditional branching"
+pattern: "graph"
+version: "1.0"
+author: "AgentMesh Team"
+
+# Agent configuration
+agents:
+  - name: "architect"
+    id: "architect-001"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a software architect. Analyze requirements and architectural decisions."
+      temperature: 0.3
+  
+  - name: "security_analyst"
+    id: "security-001"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a security expert. Identify security vulnerabilities and risks."
+      temperature: 0.2
+  
+  - name: "performance_analyst"
+    id: "performance-001"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a performance specialist. Analyze code for performance issues."
+      temperature: 0.2
+  
+  - name: "code_reviewer"
+    id: "reviewer-001"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a senior code reviewer. Review code quality, style, and best practices."
+      temperature: 0.3
+  
+  - name: "integration_tester"
+    id: "tester-001"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are an integration testing specialist. Design integration tests."
+      temperature: 0.4
+  
+  - name: "final_reviewer"
+    id: "final-001"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are the final reviewer. Consolidate all feedback and make approval decisions."
+      temperature: 0.1
+
+# Graph structure specification
+graph:
+  nodes:
+    - id: "initial_analysis"
+      agent: "architect"
+      description: "Initial architectural analysis"
+      
+    - id: "security_check"
+      agent: "security_analyst"
+      description: "Security vulnerability analysis"
+      
+    - id: "performance_check"
+      agent: "performance_analyst" 
+      description: "Performance analysis"
+      
+    - id: "code_quality_review"
+      agent: "code_reviewer"
+      description: "Code quality and style review"
+      
+    - id: "integration_testing"
+      agent: "integration_tester"
+      description: "Integration test design"
+      
+    - id: "final_consolidation"
+      agent: "final_reviewer"
+      description: "Final review and approval"
+
+  edges:
+    # Initial analysis triggers parallel security and performance checks
+    - id: "start_parallel"
+      source: "initial_analysis"
+      target: "security_check"
+      type: "parallel"
+      
+    - id: "start_parallel_perf"
+      source: "initial_analysis" 
+      target: "performance_check"
+      type: "parallel"
+      
+    # Security check can trigger code quality review
+    - id: "security_to_quality"
+      source: "security_check"
+      target: "code_quality_review"
+      type: "conditional"
+      condition: "security_issues_found"
+      
+    # Performance check always goes to integration testing
+    - id: "perf_to_integration"
+      source: "performance_check"
+      target: "integration_testing"
+      type: "sequential"
+      
+    # Code quality review (if triggered) goes to integration testing
+    - id: "quality_to_integration"
+      source: "code_quality_review"
+      target: "integration_testing"
+      type: "sequential"
+      
+    # Integration testing synchronizes before final review
+    - id: "integration_to_final"
+      source: "integration_testing"
+      target: "final_consolidation"
+      type: "synchronize"
+
+# Termination conditions
+termination:
+  max_rounds: 10
+  timeout_seconds: 1800  # 30 minutes
+  custom_conditions:
+    - "final_approval_received"
+    - "critical_issues_blocking"
+
+# Workflow parameters
+parameters:
+  require_security_approval: true
+  require_performance_approval: true
+  parallel_execution: true
+  auto_retry_failed_nodes: true
+  max_node_retries: 2
+
+# Metadata
+metadata:
+  category: "development"
+  complexity: "high"
+  estimated_duration: "30-45 minutes"
+  required_expertise:
+    - "architecture"
+    - "security"
+    - "performance"
+    - "testing"
+  
+tags:
+  - "code-review"
+  - "graph-workflow"
+  - "parallel-execution"
+  - "conditional-branching"

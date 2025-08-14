@@ -1,0 +1,132 @@
+name: "Code Review Workflow"
+description: "A sequential workflow for code development and review"
+pattern: "sequential"
+version: "1.0"
+
+# Agent definitions
+agents:
+  - name: "architect"
+    type: "assistant"
+    config:
+      model: "gpt-4o"
+      temperature: 0.3
+      max_tokens: 2000
+      system_message: |
+        You are a senior software architect with expertise in system design and best practices.
+        Your role is to:
+        1. Design system architecture
+        2. Define technical requirements
+        3. Suggest appropriate technologies and patterns
+        4. Consider scalability, performance, and maintainability
+        
+        Always provide clear, actionable guidance with rationale.
+
+  - name: "developer"
+    type: "assistant"
+    config:
+      model: "gpt-4o"
+      temperature: 0.1
+      max_tokens: 3000
+      system_message: |
+        You are an experienced software developer who writes clean, efficient, and well-documented code.
+        Your responsibilities:
+        1. Implement features according to specifications
+        2. Follow coding best practices and patterns
+        3. Write comprehensive tests
+        4. Document your code clearly
+        5. Consider error handling and edge cases
+        
+        Always write production-ready code with proper structure and comments.
+
+  - name: "reviewer"
+    type: "assistant"
+    config:
+      model: "gpt-4o"
+      temperature: 0.2
+      max_tokens: 2000
+      system_message: |
+        You are a meticulous code reviewer focused on quality, security, and maintainability.
+        Your review criteria:
+        1. Code quality and readability
+        2. Performance implications
+        3. Security vulnerabilities
+        4. Test coverage
+        5. Documentation completeness
+        6. Adherence to best practices
+        
+        Provide constructive feedback with specific suggestions for improvement.
+
+# Workflow steps
+workflow:
+  steps:
+    - name: "architecture_design"
+      agent: "architect"
+      description: "Design system architecture and technical approach"
+      inputs:
+        - "requirements"
+        - "constraints"
+      outputs:
+        - "architecture_document"
+        - "technical_specifications"
+
+    - name: "implementation"
+      agent: "developer"
+      description: "Implement the solution based on architecture"
+      inputs:
+        - "architecture_document"
+        - "technical_specifications"
+      outputs:
+        - "source_code"
+        - "unit_tests"
+        - "documentation"
+
+    - name: "code_review"
+      agent: "reviewer"
+      description: "Review implementation for quality and best practices"
+      inputs:
+        - "source_code"
+        - "unit_tests"
+        - "documentation"
+      outputs:
+        - "review_feedback"
+        - "approval_status"
+
+# Workflow configuration
+config:
+  max_iterations: 3
+  timeout_minutes: 30
+  retry_failed_steps: true
+  
+  # Termination conditions
+  termination:
+    conditions:
+      - type: "approval"
+        agent: "reviewer"
+        criteria: "code_quality_score > 0.8"
+      - type: "max_iterations"
+        value: 3
+      - type: "timeout"
+        minutes: 30
+
+  # Handoff conditions
+  handoffs:
+    - from: "architect"
+      to: "developer"
+      condition: "architecture_complete"
+    - from: "developer"
+      to: "reviewer"
+      condition: "implementation_complete"
+    - from: "reviewer"
+      to: "developer"
+      condition: "revision_required"
+
+# Example usage
+example_task: |
+  Build a REST API for a user management system with the following requirements:
+  - User registration and authentication
+  - User profile management
+  - Role-based access control
+  - Password reset functionality
+  - API rate limiting
+  - Comprehensive error handling
+  - Full test coverage

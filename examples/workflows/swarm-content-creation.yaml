@@ -1,0 +1,103 @@
+name: "Content Creation Swarm"
+pattern: "swarm"
+
+agents:
+  - name: "content_strategist"
+    type: "assistant"
+    system_message: >
+      You are a Content Strategist who develops content strategies, identifies target audiences, 
+      and plans content calendars. You excel at understanding market needs and creating 
+      comprehensive content plans that align with business objectives.
+
+  - name: "copywriter"
+    type: "assistant"
+    system_message: >
+      You are a Copywriter specializing in creating engaging, persuasive content. 
+      You write blog posts, articles, marketing copy, and social media content 
+      that resonates with target audiences and drives engagement.
+
+  - name: "editor"
+    type: "assistant"
+    system_message: >
+      You are an Editor focused on refining content for clarity, accuracy, and impact. 
+      You review drafts, improve structure and flow, ensure consistent voice and tone, 
+      and maintain high editorial standards.
+
+  - name: "visual_designer"
+    type: "assistant"
+    system_message: >
+      You are a Visual Designer who creates graphics, layouts, and visual elements 
+      that complement and enhance written content. You understand design principles 
+      and create visually appealing materials that support content objectives.
+
+  - name: "seo_specialist"
+    type: "assistant"
+    system_message: >
+      You are an SEO Specialist who optimizes content for search engines and discoverability. 
+      You research keywords, analyze competition, and ensure content follows SEO best practices 
+      while maintaining quality and readability.
+
+swarm:
+  participants:
+    - agent: "content_strategist"
+      specializations: ["strategy", "planning", "audience_analysis", "content_calendar"]
+      handoff_targets: ["copywriter", "seo_specialist", "visual_designer"]
+      participation_weight: 1.4
+      max_consecutive_turns: 4
+      priority_keywords: ["strategy", "plan", "audience", "calendar", "goals"]
+    
+    - agent: "copywriter"
+      specializations: ["writing", "content_creation", "storytelling", "engagement"]
+      handoff_targets: ["editor", "seo_specialist", "visual_designer"]
+      participation_weight: 1.2
+      max_consecutive_turns: 5
+      priority_keywords: ["write", "content", "copy", "article", "blog", "story"]
+    
+    - agent: "editor"
+      specializations: ["editing", "proofreading", "structure", "clarity"]
+      handoff_targets: ["copywriter", "content_strategist", "visual_designer"]
+      participation_weight: 1.0
+      max_consecutive_turns: 3
+      priority_keywords: ["edit", "review", "improve", "clarity", "structure"]
+    
+    - agent: "visual_designer"
+      specializations: ["design", "graphics", "layout", "visual_storytelling"]
+      handoff_targets: ["editor", "content_strategist", "seo_specialist"]
+      participation_weight: 0.9
+      max_consecutive_turns: 4
+      priority_keywords: ["design", "visual", "graphic", "layout", "image"]
+    
+    - agent: "seo_specialist"
+      specializations: ["seo", "keywords", "optimization", "discoverability"]
+      handoff_targets: ["copywriter", "editor", "content_strategist"]
+      participation_weight: 1.1
+      max_consecutive_turns: 3
+      priority_keywords: ["seo", "keywords", "optimize", "search", "ranking"]
+
+  termination:
+    type: "task_completion"
+    completion_indicators:
+      - "content ready"
+      - "deliverable complete"
+      - "ready to publish"
+      - "approved for release"
+    validation_agent: "content_strategist"
+    max_messages: 40
+    timeout: 2700  # 45 minutes
+
+  handoff_config:
+    autonomous_threshold: 0.65
+    keyword_boost: 0.35
+    specialization_boost: 0.3
+    recent_activity_penalty: 0.15
+    load_balancing: true
+    broadcast_threshold: 0.25
+
+execution:
+  max_rounds: 20
+  timeout: 2700
+  parameters:
+    content_type: "blog_post"
+    target_audience: "general"
+    quality_level: "high"
+    seo_priority: "medium"

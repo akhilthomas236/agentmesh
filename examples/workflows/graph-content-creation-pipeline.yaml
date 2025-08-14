@@ -1,0 +1,218 @@
+name: "Multi-Stage Content Creation Pipeline"
+description: "Complex content creation workflow with conditional approval, parallel processing, and quality gates"
+pattern: "graph"
+
+agents:
+  - name: "content_strategist"
+    type: "chat"
+    config:
+      system_message: "You are a Content Strategist who plans content strategy and defines requirements."
+  - name: "researcher"
+    type: "chat"
+    config:
+      system_message: "You are a Researcher who gathers information and validates facts."
+  - name: "copywriter"
+    type: "chat"
+    config:
+      system_message: "You are a Copywriter who creates engaging written content."
+  - name: "editor"
+    type: "chat"
+    config:
+      system_message: "You are an Editor who reviews and improves content quality."
+  - name: "seo_specialist"
+    type: "chat"
+    config:
+      system_message: "You are an SEO Specialist who optimizes content for search engines."
+  - name: "visual_designer"
+    type: "chat"
+    config:
+      system_message: "You are a Visual Designer who creates graphics and visual elements."
+  - name: "brand_reviewer"
+    type: "chat"
+    config:
+      system_message: "You are a Brand Reviewer who ensures content aligns with brand guidelines."
+  - name: "compliance_officer"
+    type: "chat"
+    config:
+      system_message: "You are a Compliance Officer who reviews content for legal and regulatory compliance."
+  - name: "content_manager"
+    type: "chat"
+    config:
+      system_message: "You are a Content Manager who provides final approval for publication."
+
+termination:
+  max_rounds: 15
+  timeout_seconds: 2400
+
+graph:
+  nodes:
+    - id: "strategy_planning"
+      agent: "content_strategist"
+      description: "Define content strategy and requirements"
+      max_retries: 2
+      timeout: 300
+    
+    - id: "topic_research"
+      agent: "researcher"
+      description: "Research topic and gather supporting information"
+      max_retries: 3
+      timeout: 600
+    
+    - id: "content_creation"
+      agent: "copywriter"
+      description: "Write initial content draft"
+      max_retries: 3
+      timeout: 900
+    
+    - id: "seo_optimization"
+      agent: "seo_specialist"
+      description: "Optimize content for search engines"
+      max_retries: 2
+      timeout: 400
+    
+    - id: "visual_creation"
+      agent: "visual_designer"
+      description: "Create visual elements and graphics"
+      max_retries: 3
+      timeout: 800
+    
+    - id: "content_editing"
+      agent: "editor"
+      description: "Edit and improve content quality"
+      max_retries: 2
+      timeout: 600
+    
+    - id: "brand_review"
+      agent: "brand_reviewer"
+      description: "Review content for brand alignment"
+      max_retries: 2
+      timeout: 300
+    
+    - id: "compliance_check"
+      agent: "compliance_officer"
+      description: "Review content for legal compliance"
+      max_retries: 1
+      timeout: 400
+    
+    - id: "quality_gate"
+      agent: "editor"
+      description: "Final quality assessment"
+      max_retries: 1
+      timeout: 200
+    
+    - id: "final_approval"
+      agent: "content_manager"
+      description: "Final approval for publication"
+      max_retries: 1
+      timeout: 300
+
+  edges:
+    - id: "strategy_to_research"
+      source: "strategy_planning"
+      target: "topic_research"
+      type: "sequential"
+    
+    - id: "research_to_content"
+      source: "topic_research"
+      target: "content_creation"
+      type: "sequential"
+    
+    - id: "content_to_seo"
+      source: "content_creation"
+      target: "seo_optimization"
+      type: "parallel"
+    
+    - id: "content_to_visual"
+      source: "content_creation"
+      target: "visual_creation"
+      type: "parallel"
+    
+    - id: "seo_to_editing"
+      source: "seo_optimization"
+      target: "content_editing"
+      type: "sequential"
+    
+    - id: "visual_to_editing"
+      source: "visual_creation"
+      target: "content_editing"
+      type: "synchronize"
+    
+    - id: "editing_to_brand"
+      source: "content_editing"
+      target: "brand_review"
+      type: "parallel"
+    
+    - id: "editing_to_compliance"
+      source: "content_editing"
+      target: "compliance_check"
+      type: "parallel"
+    
+    - id: "brand_to_quality"
+      source: "brand_review"
+      target: "quality_gate"
+      type: "synchronize"
+    
+    - id: "compliance_to_quality"
+      source: "compliance_check"
+      target: "quality_gate"
+      type: "synchronize"
+    
+    - id: "quality_to_approval"
+      source: "quality_gate"
+      target: "final_approval"
+      type: "conditional"
+      condition: "quality_pass"
+    
+    # Feedback loops for revisions
+    - id: "brand_feedback_loop"
+      source: "brand_review"
+      target: "content_editing"
+      type: "conditional"
+      condition: "brand_revision_needed"
+    
+    - id: "compliance_feedback_loop"
+      source: "compliance_check"
+      target: "content_editing"
+      type: "conditional"
+      condition: "compliance_revision_needed"
+
+  parallel_branches:
+    - id: "content_enhancement"
+      nodes: ["seo_optimization", "visual_creation"]
+      synchronization_node: "content_editing"
+    
+    - id: "review_phase"
+      nodes: ["brand_review", "compliance_check"]
+      synchronization_node: "quality_gate"
+
+  conditions:
+    quality_pass:
+      type: "evaluation"
+      criteria: ["content_quality", "brand_alignment", "compliance_status"]
+      timeout: 300
+    
+    brand_revision_needed:
+      type: "evaluation"
+      criteria: ["brand_score_below_threshold"]
+      timeout: 180
+    
+    compliance_revision_needed:
+      type: "evaluation"
+      criteria: ["compliance_issues_found"]
+      timeout: 180
+
+parameters:
+  content_requirements:
+    word_count_min: 1000
+    word_count_max: 2500
+    readability_score: 60
+    seo_score_min: 80
+  
+  quality_thresholds:
+    brand_alignment_score: 85
+    compliance_score: 95
+    overall_quality_score: 90
+  
+  approval_settings:
+    auto_approve_threshold: 95
+    requires_manual_review: true

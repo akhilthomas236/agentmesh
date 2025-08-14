@@ -1,0 +1,217 @@
+name: "Advanced Product Development Pipeline"
+description: "Complex graph workflow for end-to-end product development with parallel research, conditional approval gates, and quality assurance"
+pattern: "graph"
+
+agents:
+  - name: "product_manager"
+    type: "chat"
+    config:
+      system_message: "You are a Product Manager responsible for defining requirements and managing the development process."
+  - name: "market_researcher" 
+    type: "chat"
+    config:
+      system_message: "You are a Market Researcher who analyzes market trends and customer needs."
+  - name: "tech_researcher"
+    type: "chat"
+    config:
+      system_message: "You are a Technical Researcher who evaluates technology feasibility and constraints."
+  - name: "ux_designer"
+    type: "chat"
+    config:
+      system_message: "You are a UX Designer who creates user experience and interface designs."
+  - name: "tech_lead"
+    type: "chat"
+    config:
+      system_message: "You are a Technical Lead who designs system architecture and technical implementation."
+  - name: "developer"
+    type: "chat"
+    config:
+      system_message: "You are a Senior Developer who implements features and writes code."
+  - name: "qa_engineer"
+    type: "chat"
+    config:
+      system_message: "You are a QA Engineer who tests functionality and ensures quality."
+  - name: "security_expert"
+    type: "chat"
+    config:
+      system_message: "You are a Security Expert who reviews code and designs for security vulnerabilities."
+  - name: "stakeholder"
+    type: "chat"
+    config:
+      system_message: "You are a Stakeholder who provides approval and feedback on deliverables."
+
+termination:
+  max_rounds: 20
+  timeout_seconds: 3600
+
+graph:
+  nodes:
+    - id: "requirements_gathering"
+      agent: "product_manager"
+      description: "Define product requirements and scope"
+      max_retries: 2
+      timeout: 300
+    
+    - id: "market_research"
+      agent: "market_researcher"
+      description: "Conduct market analysis and competitor research"
+      max_retries: 2
+      timeout: 600
+    
+    - id: "tech_feasibility"
+      agent: "tech_researcher"
+      description: "Evaluate technical feasibility and constraints"
+      max_retries: 2
+      timeout: 600
+    
+    - id: "research_synthesis"
+      agent: "product_manager"
+      description: "Synthesize research findings and finalize requirements"
+      max_retries: 1
+      timeout: 300
+    
+    - id: "ux_design"
+      agent: "ux_designer"
+      description: "Create UX wireframes and user flow"
+      max_retries: 3
+      timeout: 900
+    
+    - id: "architecture_design"
+      agent: "tech_lead"
+      description: "Design system architecture and technical specs"
+      max_retries: 2
+      timeout: 900
+    
+    - id: "stakeholder_approval"
+      agent: "stakeholder"
+      description: "Review and approve designs before development"
+      max_retries: 1
+      timeout: 600
+    
+    - id: "development"
+      agent: "developer"
+      description: "Implement features based on approved designs"
+      max_retries: 5
+      timeout: 1800
+    
+    - id: "security_review"
+      agent: "security_expert"
+      description: "Review code and architecture for security issues"
+      max_retries: 2
+      timeout: 600
+    
+    - id: "qa_testing"
+      agent: "qa_engineer"
+      description: "Test functionality and ensure quality standards"
+      max_retries: 3
+      timeout: 900
+    
+    - id: "final_approval"
+      agent: "stakeholder"
+      description: "Final approval for product release"
+      max_retries: 1
+      timeout: 300
+
+  edges:
+    - id: "req_to_research"
+      source: "requirements_gathering"
+      target: "market_research"
+      type: "parallel"
+    
+    - id: "req_to_tech"
+      source: "requirements_gathering"
+      target: "tech_feasibility"
+      type: "parallel"
+    
+    - id: "market_to_synthesis"
+      source: "market_research"
+      target: "research_synthesis"
+      type: "synchronize"
+    
+    - id: "tech_to_synthesis"
+      source: "tech_feasibility"
+      target: "research_synthesis"
+      type: "synchronize"
+    
+    - id: "synthesis_to_ux"
+      source: "research_synthesis"
+      target: "ux_design"
+      type: "parallel"
+    
+    - id: "synthesis_to_arch"
+      source: "research_synthesis"
+      target: "architecture_design"
+      type: "parallel"
+    
+    - id: "ux_to_approval"
+      source: "ux_design"
+      target: "stakeholder_approval"
+      type: "synchronize"
+    
+    - id: "arch_to_approval"
+      source: "architecture_design"
+      target: "stakeholder_approval"
+      type: "synchronize"
+    
+    - id: "approval_to_dev"
+      source: "stakeholder_approval"
+      target: "development"
+      type: "conditional"
+      condition: "approval"
+    
+    - id: "dev_to_security"
+      source: "development"
+      target: "security_review"
+      type: "parallel"
+    
+    - id: "dev_to_qa"
+      source: "development"
+      target: "qa_testing"
+      type: "parallel"
+    
+    - id: "security_to_final"
+      source: "security_review"
+      target: "final_approval"
+      type: "synchronize"
+    
+    - id: "qa_to_final"
+      source: "qa_testing"
+      target: "final_approval"
+      type: "synchronize"
+
+  parallel_branches:
+    - id: "research_phase"
+      nodes: ["market_research", "tech_feasibility"]
+      synchronization_node: "research_synthesis"
+    
+    - id: "design_phase"
+      nodes: ["ux_design", "architecture_design"]
+      synchronization_node: "stakeholder_approval"
+    
+    - id: "validation_phase"
+      nodes: ["security_review", "qa_testing"]
+      synchronization_node: "final_approval"
+
+  conditions:
+    approval:
+      type: "approval"
+      required_approval: "stakeholder"
+      timeout: 600
+    
+    quality_gate:
+      type: "consensus"
+      required_agents: ["security_expert", "qa_engineer"]
+      timeout: 300
+
+parameters:
+  quality_standards:
+    security_score_threshold: 85
+    test_coverage_threshold: 90
+    performance_requirements:
+      max_response_time: 200
+      max_memory_usage: "512MB"
+  
+  approval_criteria:
+    design_completeness: true
+    budget_approval: true
+    timeline_approval: true

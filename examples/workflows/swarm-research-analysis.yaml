@@ -1,0 +1,101 @@
+name: "Research Analysis Swarm"
+description: "Autonomous swarm for collaborative research analysis with dynamic handoffs"
+pattern: "swarm"
+
+agents:
+  - name: "data_collector"
+    type: "chat"
+    config:
+      system_message: "You are a Data Collector specialized in gathering information from various sources."
+  - name: "analyst"
+    type: "chat"
+    config:
+      system_message: "You are a Data Analyst who interprets data and identifies patterns."
+  - name: "statistician"
+    type: "chat"
+    config:
+      system_message: "You are a Statistician who performs statistical analysis and validates findings."
+  - name: "domain_expert"
+    type: "chat"
+    config:
+      system_message: "You are a Domain Expert with deep subject matter knowledge."
+  - name: "report_generator"
+    type: "chat"
+    config:
+      system_message: "You are a Report Generator who synthesizes findings into comprehensive reports."
+
+termination:
+  max_messages: 20
+  max_handoffs: 15
+  timeout_seconds: 1800
+
+swarm:
+  participants:
+    - agent_id: "data_collector"
+      name: "Data Collector"
+      specializations: ["data_gathering", "source_validation", "information_extraction"]
+      handoff_targets: ["analyst", "domain_expert"]
+      weight: 1.2
+      max_consecutive_turns: 3
+      cooldown_seconds: 30
+    
+    - agent_id: "analyst"
+      name: "Data Analyst"
+      specializations: ["pattern_recognition", "data_interpretation", "trend_analysis"]
+      handoff_targets: ["statistician", "domain_expert", "report_generator"]
+      weight: 1.5
+      max_consecutive_turns: 4
+      cooldown_seconds: 15
+    
+    - agent_id: "statistician"
+      name: "Statistician"
+      specializations: ["statistical_analysis", "hypothesis_testing", "data_validation"]
+      handoff_targets: ["analyst", "domain_expert", "report_generator"]
+      weight: 1.3
+      max_consecutive_turns: 3
+      cooldown_seconds: 20
+    
+    - agent_id: "domain_expert"
+      name: "Domain Expert"
+      specializations: ["subject_matter_expertise", "context_interpretation", "validation"]
+      handoff_targets: ["analyst", "statistician", "report_generator"]
+      weight: 1.1
+      max_consecutive_turns: 2
+      cooldown_seconds: 45
+    
+    - agent_id: "report_generator"
+      name: "Report Generator"
+      specializations: ["synthesis", "documentation", "presentation"]
+      handoff_targets: ["analyst", "domain_expert"]
+      weight: 1.0
+      max_consecutive_turns: 2
+      cooldown_seconds: 60
+  
+  termination:
+    max_messages: 20
+    max_handoffs: 15
+    timeout_seconds: 1800
+    convergence_threshold: 0.85
+    min_participation: 0.6
+  
+  handoff_strategy: "autonomous"
+  collaboration_mode: "cooperative"
+  initial_agent: "data_collector"
+
+parameters:
+  swarm:
+    participants: []  # Will be populated from swarm.participants
+    termination:
+      max_messages: 20
+      max_handoffs: 15
+      timeout_seconds: 1800
+  
+  research_focus:
+    depth: "comprehensive"
+    breadth: "wide"
+    validation_level: "high"
+  
+  quality_thresholds:
+    data_confidence: 0.8
+    analysis_completeness: 0.9
+    statistical_significance: 0.95

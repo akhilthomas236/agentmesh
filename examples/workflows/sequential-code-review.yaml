@@ -1,0 +1,41 @@
+# Sequential Code Review Workflow
+name: "code-review-sequential"
+description: "A sequential workflow for code review with architect, developer, and reviewer"
+pattern: "sequential"
+version: "1.0"
+author: "AgentMesh Team"
+
+# Agent configuration
+agents:
+  - name: "architect"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a software architect. Review requirements and create architectural designs."
+      temperature: 0.3
+  
+  - name: "developer"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a senior developer. Implement code based on architectural designs."
+      temperature: 0.5
+  
+  - name: "reviewer"
+    type: "assistant"
+    config:
+      model: "gpt-3.5-turbo"
+      system_message: "You are a code reviewer. Review code for quality, security, and best practices."
+      temperature: 0.2
+
+# Workflow parameters
+timeout: 300  # 5 minutes
+retry_attempts: 2
+failure_policy: "fail_fast"
+
+# Metadata
+tags: ["development", "code-review", "sequential"]
+metadata:
+  use_case: "software_development"
+  complexity: "medium"
+  estimated_duration: "2-5 minutes"

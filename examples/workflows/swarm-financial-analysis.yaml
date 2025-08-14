@@ -1,0 +1,100 @@
+name: "Financial Analysis Swarm"
+pattern: "swarm"
+
+agents:
+  - name: "data_analyst"
+    type: "assistant"
+    system_message: >
+      You are a Financial Data Analyst who collects, processes, and analyzes financial data. 
+      You excel at data mining, statistical analysis, and identifying trends in financial markets 
+      and company performance metrics.
+
+  - name: "risk_analyst"
+    type: "assistant"
+    system_message: >
+      You are a Risk Analyst specializing in identifying, assessing, and quantifying financial risks. 
+      You evaluate market volatility, credit risk, operational risk, and regulatory compliance issues.
+
+  - name: "portfolio_manager"
+    type: "assistant"
+    system_message: >
+      You are a Portfolio Manager responsible for investment strategy and asset allocation. 
+      You make investment decisions based on research and analysis, balancing risk and return 
+      to optimize portfolio performance.
+
+  - name: "quantitative_analyst"
+    type: "assistant"
+    system_message: >
+      You are a Quantitative Analyst (Quant) who develops mathematical models and algorithms 
+      for trading strategies, risk management, and financial forecasting using advanced 
+      statistical and computational methods.
+
+  - name: "compliance_officer"
+    type: "assistant"
+    system_message: >
+      You are a Compliance Officer ensuring all financial activities adhere to regulatory 
+      requirements and internal policies. You review recommendations for regulatory compliance 
+      and identify potential legal or ethical issues.
+
+swarm:
+  participants:
+    - agent: "data_analyst"
+      specializations: ["data_collection", "statistical_analysis", "trend_identification", "reporting"]
+      handoff_targets: ["risk_analyst", "quantitative_analyst", "portfolio_manager"]
+      participation_weight: 1.2
+      max_consecutive_turns: 4
+      priority_keywords: ["data", "analysis", "trends", "statistics", "metrics"]
+    
+    - agent: "risk_analyst"
+      specializations: ["risk_assessment", "volatility_analysis", "credit_risk", "market_risk"]
+      handoff_targets: ["portfolio_manager", "compliance_officer", "quantitative_analyst"]
+      participation_weight: 1.3
+      max_consecutive_turns: 3
+      priority_keywords: ["risk", "volatility", "exposure", "assessment", "credit"]
+    
+    - agent: "portfolio_manager"
+      specializations: ["investment_strategy", "asset_allocation", "performance_optimization"]
+      handoff_targets: ["risk_analyst", "quantitative_analyst", "compliance_officer"]
+      participation_weight: 1.4
+      max_consecutive_turns: 5
+      priority_keywords: ["portfolio", "investment", "allocation", "strategy", "performance"]
+    
+    - agent: "quantitative_analyst"
+      specializations: ["mathematical_modeling", "algorithm_development", "forecasting", "backtesting"]
+      handoff_targets: ["data_analyst", "risk_analyst", "portfolio_manager"]
+      participation_weight: 1.1
+      max_consecutive_turns: 4
+      priority_keywords: ["model", "algorithm", "forecast", "quantitative", "backtest"]
+    
+    - agent: "compliance_officer"
+      specializations: ["regulatory_compliance", "policy_review", "legal_assessment", "ethics"]
+      handoff_targets: ["portfolio_manager", "risk_analyst", "data_analyst"]
+      participation_weight: 1.0
+      max_consecutive_turns: 2
+      priority_keywords: ["compliance", "regulatory", "legal", "policy", "ethics"]
+
+  termination:
+    type: "consensus"
+    consensus_threshold: 0.75
+    required_agents: ["portfolio_manager", "risk_analyst", "compliance_officer"]
+    consensus_keywords: ["recommendation approved", "analysis complete", "ready to proceed"]
+    max_messages: 35
+    timeout: 2400  # 40 minutes
+
+  handoff_config:
+    autonomous_threshold: 0.7
+    keyword_boost: 0.25
+    specialization_boost: 0.45
+    recent_activity_penalty: 0.2
+    load_balancing: true
+    broadcast_threshold: 0.3
+    risk_escalation: true  # Automatically involve risk_analyst for high-risk scenarios
+
+execution:
+  max_rounds: 18
+  timeout: 2400
+  parameters:
+    analysis_depth: "comprehensive"
+    risk_tolerance: "moderate"
+    regulatory_focus: "high"
+    time_horizon: "medium_term"
