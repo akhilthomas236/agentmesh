@@ -1,4 +1,4 @@
-"""CLI main entry point for AutoGen A2A system."""
+"""CLI main entry point for AgentMesh system."""
 
 import argparse
 import asyncio
@@ -52,7 +52,7 @@ def create_parser() -> argparse.ArgumentParser:
 
 def print_help():
     """Print help information with examples."""
-    console.print("[bold]AutoGen A2A CLI[/bold] - Agent-to-Agent Communication System")
+    console.print("[bold]AgentMesh CLI[/bold] - Multi-Agent Orchestration Platform")
     console.print()
 
     # Create examples table
@@ -64,31 +64,31 @@ def print_help():
     table.add_row(
         "agent create",
         "Create a new agent",
-        "autogen-a2a agent create --name architect --type assistant",
+        "agentmesh agent create --name architect --type assistant",
     )
-    table.add_row("agent list", "List all agents", "autogen-a2a agent list")
+    table.add_row("agent list", "List all agents", "agentmesh agent list")
     table.add_row(
         "workflow create",
         "Create a workflow",
-        "autogen-a2a workflow create --config workflow.yaml",
+        "agentmesh workflow create --config workflow.yaml",
     )
     table.add_row(
-        "workflow run", "Run a workflow", "autogen-a2a workflow run --id workflow-123"
+        "workflow run", "Run a workflow", "agentmesh workflow run --id workflow-123"
     )
     table.add_row(
-        "swarm create", "Create a swarm", "autogen-a2a swarm create --config swarm.yaml"
+        "swarm create", "Create a swarm", "agentmesh swarm create --config swarm.yaml"
     )
     table.add_row(
-        "swarm monitor", "Monitor a swarm", "autogen-a2a swarm monitor --id swarm-123"
+        "swarm monitor", "Monitor a swarm", "agentmesh swarm monitor --id swarm-123"
     )
     table.add_row(
-        "server start", "Start the API server", "autogen-a2a server start --port 8000"
+        "server start", "Start the API server", "agentmesh server start --port 8000"
     )
 
     console.print(table)
     console.print()
     console.print(
-        "Use [cyan]autogen-a2a COMMAND --help[/cyan] for more information about a command."
+        "Use [cyan]agentmesh COMMAND --help[/cyan] for more information about a command."
     )
 
 
