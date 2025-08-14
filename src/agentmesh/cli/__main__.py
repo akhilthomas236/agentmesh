@@ -16,12 +16,12 @@ console = Console()
 def create_parser() -> argparse.ArgumentParser:
     """Create the main argument parser."""
     parser = argparse.ArgumentParser(
-        prog="autogen-a2a",
-        description="AutoGen Agent-to-Agent Communication System CLI",
+        prog="agentmesh",
+        description="AgentMesh - Multi-Agent Orchestration Platform CLI",
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
-    parser.add_argument("--version", action="version", version="autogen-a2a 0.1.0")
+    parser.add_argument("--version", action="version", version="agentmesh 0.1.0")
 
     parser.add_argument(
         "--server",
