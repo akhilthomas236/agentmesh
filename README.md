@@ -39,11 +39,30 @@ A production-grade multi-agent orchestration platform built on Microsoft AutoGen
 ### Installation
 
 ```bash
-# Install with Poetry (recommended)
+# Install from PyPI
+pip install agentmesh-orchestrator
+
+# Or install from source with Poetry (for development)
 poetry install
 
-# Or with pip
+# Or with pip from source
 pip install -e .
+```
+
+### Verify Installation
+
+After installation, verify that the CLI is working correctly:
+
+```bash
+# Check version
+agentmesh --version
+
+# View available commands
+agentmesh --help
+
+# Get help for specific commands
+agentmesh agent --help
+agentmesh workflow --help
 ```
 
 ### Basic Usage

@@ -291,7 +291,6 @@ autogen.log
 autogen_cache/
 
 # Model artifacts
-models/
 *.model
 *.pkl
 *.joblib
